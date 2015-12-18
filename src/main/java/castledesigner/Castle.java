@@ -420,4 +420,15 @@ public class Castle
 	{
 		buildingsPanelRef = b;
 	}
+
+	/**
+	 * Return the grid data.
+	 * 
+	 * @return TileBuilding[][] gridData
+	 */
+	public TileBuilding[][] getGrid() {
+		return gridData;
+		// TODO Auto-generated method stub
+		
+	}
 }

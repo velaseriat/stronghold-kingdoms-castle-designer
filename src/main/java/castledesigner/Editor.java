@@ -33,6 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -80,13 +81,13 @@ public class Editor
 	private static File			currentFile;
 	private static JPanel		errorPanel;
 	private static final String	FILE_EXTENSION	= "png";
-	
+
 	public static void main(String[] args)
 	{
 		setLookAndFeel();
-		
+
 		JPanel mainPanel = new JPanel();
-		
+
 		landPanel = new LandPanel();
 		landPanel.getLandGrid().addDesignListener(new DesignListener()
 		{
@@ -95,10 +96,10 @@ public class Editor
 				updateErrorPanel();
 			}
 		});
-		
+
 		BuildingsPanel buildingsPanel = new BuildingsPanel();
 		buildingsPanel.setCastle(landPanel.getLandGrid().getCastle());
-		
+
 		buildingsPanel.addPropertyChangeListener(BuildingsPanel.SELECTED_BUILDING, new PropertyChangeListener()
 		{
 			public void propertyChange(PropertyChangeEvent evt)
@@ -106,29 +107,29 @@ public class Editor
 				landPanel.getLandGrid().setSelectedBuilding((BuildingType) evt.getNewValue());
 			}
 		});
-		
+
 		landPanel.getLandGrid().addDesignListener(buildingsPanel);
 		landPanel.getLandGrid().getCastle().setBuildingsPanel(buildingsPanel);
-		
+
 		TipsPanel tipsPanel = new TipsPanel();
-		
+
 		errorPanel = new JPanel();
 		errorPanel.setBorder(new EmptyBorder(5, 10, 0, 0));
 		errorPanel.setLayout(new BoxLayout(errorPanel, BoxLayout.Y_AXIS));
-		
+
 		JPanel rightPanel = new JPanel();
 		GroupLayout layout = new GroupLayout(rightPanel);
 		rightPanel.setLayout(layout);
-		
+
 		layout.setHorizontalGroup(
 				layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(buildingsPanel).addComponent(errorPanel).addComponent(tipsPanel));
 		layout.setVerticalGroup(layout.createSequentialGroup().addComponent(buildingsPanel)
 				.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(errorPanel).addComponent(tipsPanel));
-				
+
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, landPanel, rightPanel);
-		
+
 		mainPanel.add(splitPane);
-		
+
 		saveFileChooser = new JFileChooser();
 		saveFileChooser.setFileFilter(new FileNameExtensionFilter("Stronghold Kingdoms Castle Design", FILE_EXTENSION));
 		saveFileChooser.setAcceptAllFileFilterUsed(false);
@@ -148,14 +149,14 @@ public class Editor
 				}
 			}
 		});
-		
+
 		openFileChooser = new JFileChooser();
-		
+
 		// It would be nice to use the following, but for backwards
 		// compatibility reasons we can't.
 		// openFileChooser.setFileFilter(new FileNameExtensionFilter("Stronghold
 		// Kingdoms Castle Design", FILE_EXTENSION));
-		
+
 		openFileChooser.setFileFilter(new FileFilter()
 		{
 			@Override
@@ -164,16 +165,16 @@ public class Editor
 				String[] s = file.getName().split("\\.");
 				return file.isDirectory() || s.length <= 1 || s[s.length - 1].equals(FILE_EXTENSION);
 			}
-			
+
 			@Override
 			public String getDescription()
 			{
 				return null;
 			}
 		});
-		
+
 		JScrollPane mainScrollPane = new JScrollPane(mainPanel);
-		
+
 		frame = new JFrame("Stronghold Kingdoms Castle Designer");
 		frame.setJMenuBar(createMenuBar());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -181,7 +182,7 @@ public class Editor
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
+
 	static void updateErrorPanel()
 	{
 		errorPanel.removeAll();
@@ -195,7 +196,7 @@ public class Editor
 		}
 		errorPanel.revalidate();
 	}
-	
+
 	/**
 	 * Attempts to set the Look and Feel of the application to the native
 	 * platform.
@@ -219,7 +220,7 @@ public class Editor
 			Logger.getLogger(Editor.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	/**
 	 * Returns the menu bar for our application's main screen.
 	 * 
@@ -228,13 +229,13 @@ public class Editor
 	private static JMenuBar createMenuBar()
 	{
 		JMenuBar menuBar = new JMenuBar();
-		
+
 		menuBar.add(createFileMenu());
 		menuBar.add(createHelpMenu());
-		
+
 		return menuBar;
 	}
-	
+
 	/**
 	 * Returns the File menu
 	 * 
@@ -243,24 +244,79 @@ public class Editor
 	private static JMenu createFileMenu()
 	{
 		JMenu fileMenu = new JMenu("File");
-		
+
 		fileMenu.add(createOpenMenuItem());
 		fileMenu.add(createSaveMenuItem());
 		fileMenu.add(createSaveAsMenuItem());
-		
+
 		fileMenu.add(new JPopupMenu.Separator());
 		fileMenu.add(createExportMenuItem());
 		fileMenu.add(createImportMenuItem());
-		
+
+		fileMenu.add(new JPopupMenu.Separator());
+		fileMenu.add(createCasFileExportItem());
+
 		fileMenu.add(new JPopupMenu.Separator());
 		fileMenu.add(createClearMenuItem());
-		
+
 		fileMenu.add(new JPopupMenu.Separator());
 		fileMenu.add(createExitMenuItem());
-		
+
 		return fileMenu;
 	}
-	
+
+	/**
+	 * Returns the menu item to save to .cas files
+	 * 
+	 * @return
+	 */
+	private static JMenuItem createCasFileExportItem() {
+		JMenuItem createCasFileExportItem = new JMenuItem("Save to .cas files");
+		createCasFileExportItem.addActionListener(new ActionListener()
+		{
+
+			public void actionPerformed(ActionEvent arg0) {
+				boolean gotDir = false;
+				File dir;
+				//determine what files system to use
+				if (System.getProperty("os.name").toLowerCase().contains("windows")){
+					dir = (new File(System.getenv("APPDATA")));
+					if (dir.exists()){
+						dir = new File(dir.getPath() + "/Firefly Studios/Stronghold Kingdoms");
+						if (dir.exists())
+							prepareCastleFileExporter(dir);
+					}
+				}
+				//you guys can add the other operating systems, like Mac OSX. I don't ... well I do but I'm lazy.
+				else{
+					//other operating system file structure to be added by other people!
+					//prepareCastleFileExporter(dir);
+				}
+
+			}
+
+			private void prepareCastleFileExporter(File dir) {
+				//if we have a good directory
+				//lets get the list of files
+				FilenameFilter fnf = new FilenameFilter(){
+					public boolean accept(File dir, String name) {
+						return name.startsWith("CasInfra") && name.endsWith(".cas");
+					}
+				};
+				File[] casFiles = dir.listFiles(fnf);
+
+				//instantiate a new cas file exporter
+				CasFileWriter cfw = new CasFileWriter();
+				cfw.setGridData(landPanel.getLandGrid().getCastle().getGrid());
+				cfw.setCasFiles(casFiles);
+				//Kaboom!
+				cfw.writeToCasFiles();
+			}
+
+		});
+		return createCasFileExportItem;
+	}
+
 	/**
 	 * Returns the menu item to open/load castles.
 	 *
@@ -325,7 +381,7 @@ public class Editor
 		});
 		return openMenuItem;
 	}
-	
+
 	/**
 	 * Returns the menu item to save the castle.
 	 *
@@ -349,7 +405,7 @@ public class Editor
 		});
 		return saveMenuItem;
 	}
-	
+
 	private static void showSaveDialog()
 	{
 		int result = saveFileChooser.showSaveDialog(frame);
@@ -358,7 +414,7 @@ public class Editor
 			saveFile(saveFileChooser.getSelectedFile());
 		}
 	}
-	
+
 	private static void saveFile(File file)
 	{
 		PrintWriter out = null;
@@ -366,7 +422,7 @@ public class Editor
 		{
 			BufferedImage bufferedImage = landPanel.getDesignImage();
 			Barcode.embedBarcode(bufferedImage, generateExportString());
-			
+
 			ImageIO.write(bufferedImage, "png", file);
 			currentFile = file;
 		} catch (IOException ex)
@@ -381,7 +437,7 @@ public class Editor
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the menu item to save the castle under a specific filename.
 	 *
@@ -399,7 +455,7 @@ public class Editor
 		});
 		return saveAsMenuItem;
 	}
-	
+
 	/**
 	 * Returns the menu item responsible for showing a text string containing
 	 * all the inputted data.
@@ -417,13 +473,13 @@ public class Editor
 				JTextArea textArea = new JTextArea(exportString);
 				textArea.setLineWrap(true);
 				textArea.setEditable(false);
-				
+
 				JScrollPane scrollPane = new JScrollPane(textArea);
 				scrollPane.setPreferredSize(new Dimension(450, 300));
-				
+
 				JPanel panel = new JPanel();
 				panel.add(scrollPane);
-				
+
 				JButton clipboardButton = new JButton("Copy to Clipboard");
 				clipboardButton.addActionListener(new ActionListener()
 				{
@@ -433,13 +489,13 @@ public class Editor
 					}
 				});
 				panel.add(clipboardButton);
-				
+
 				JOptionPane.showMessageDialog(frame, panel);
 			}
 		});
 		return exportMenuItem;
 	}
-	
+
 	/**
 	 * Returns the menu item responsible for allowing input of a string that
 	 * will populate our data.
@@ -455,13 +511,13 @@ public class Editor
 			{
 				final JTextArea textArea = new JTextArea();
 				textArea.setLineWrap(true);
-				
+
 				JScrollPane scrollPane = new JScrollPane(textArea);
 				scrollPane.setPreferredSize(new Dimension(450, 300));
-				
+
 				JPanel panel = new JPanel();
 				panel.add(scrollPane);
-				
+
 				JButton clipboardButton = new JButton("Import");
 				clipboardButton.addActionListener(new ActionListener()
 				{
@@ -477,13 +533,13 @@ public class Editor
 					}
 				});
 				panel.add(clipboardButton);
-				
+
 				JOptionPane.showMessageDialog(frame, panel);
 			}
 		});
 		return importMenuItem;
 	}
-	
+
 	/**
 	 * Returns a menu item for exiting the application.
 	 *
@@ -501,7 +557,7 @@ public class Editor
 		});
 		return exitMenuItem;
 	}
-	
+
 	/**
 	 * Returns a menu item for clearing the data.
 	 *
@@ -516,13 +572,13 @@ public class Editor
 			{
 				// We don't want to accidently save over a previous design
 				currentFile = null;
-				
+
 				landPanel.getLandGrid().clearData();
 			}
 		});
 		return exitMenuItem;
 	}
-	
+
 	/**
 	 * Returns the help menu.
 	 *
@@ -542,20 +598,20 @@ public class Editor
 			}
 		});
 		helpMenu.add(aboutMenuItem);
-		
+
 		return helpMenu;
 	}
-	
+
 	private static String generateExportString()
 	{
 		return landPanel.getLandGrid().getCastle().getGridDataExport();
 	}
-	
+
 	private static void importData(String text) throws UnsupportedVersionException
 	{
 		if (text == null || text.length() == 0)
 			return;
-			
+
 		landPanel.getLandGrid().importData(text);
 	}
 }
