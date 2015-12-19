@@ -12,8 +12,6 @@ import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.TreeSet;
 
-import javax.swing.JOptionPane;
-
 public class CasFileWriter {
 
 	private TileBuilding[][] gridData;
