@@ -12,10 +12,12 @@ import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import javax.swing.JOptionPane;
+
 public class CasFileWriter {
 
-	TileBuilding[][] gridData;
-	File[] casFiles;
+	private TileBuilding[][] gridData;
+	private File[] casFiles;
 
 	private HashMap<CastlePoint, BuildingType> castleLayoutMap;
 	private HashMap<Point, BuildingType> preWriteMap;
@@ -23,18 +25,92 @@ public class CasFileWriter {
 	public void writeToCasFiles(){
 		castleLayoutMap = convertGridData(gridData);
 		preWriteMap = addCasFileOffset(castleLayoutMap);
-		//maybe someone wants to prioritize centered structures? in hex, coords of keep is (36, 36).
-		outputToFiles(preWriteMap);
-	}
-
-	private void outputToFiles(HashMap<Point, BuildingType> pwm) {
-		int totalStructures = pwm.size();
-		for (Point p : pwm.keySet()){
-			pointToCasFileShortConverter(p);
+		short[] payload = constructPayload(preWriteMap);
+		System.out.println(preWriteMap);
+		//short[] payload = new short[] {0x0300, 0x0000, 0x2323, 0x0e00, 0x2329, 0x0e00, 0x232f, 0x0e00};
+		FileOutputStream fos;
+		for (File f : casFiles){
+			try {
+				fos = new FileOutputStream(f);
+				ByteBuffer myByteBuffer = ByteBuffer.allocate(payload.length*2);
+				myByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				
+				ShortBuffer myShortBuffer = myByteBuffer.asShortBuffer();
+				myShortBuffer.put(payload);
+				
+				FileChannel out = fos.getChannel();
+				
+				out.write(myByteBuffer);
+				
+				out.close();
+				fos.close();
+			} catch (FileNotFoundException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
-	
-	
+
+	private short[] constructPayload(HashMap<Point, BuildingType> pwm) {
+		short[] shortBuildArray = new short[2 + pwm.size()*2];
+		shortBuildArray[0] = (short) pwm.size();
+		shortBuildArray[1] = 0x0000;
+		
+		int count = 2;
+		for (Point p : pwm.keySet()){
+			short[] pair = getStructureShortPair(p, pwm.get(p));
+			shortBuildArray[count] = pair[0];
+			shortBuildArray[count + 1] = pair[1];
+			count+=2;
+		}
+		
+		return shortBuildArray;
+	}
+		
+		
+		
+		/*File f = new File("HERO.cas");
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream(f);
+			ByteBuffer myByteBuffer = ByteBuffer.allocate(2);
+			myByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			
+			ShortBuffer myShortBuffer = myByteBuffer.asShortBuffer();
+			myShortBuffer.put((short)(0x0000 + 15));
+			
+			FileChannel out = fos.getChannel();
+
+			
+			out.write(myByteBuffer);
+
+			
+			out.close();
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+
+
+	private short[] getStructureShortPair(Point p, BuildingType bt) {
+		short coord, buildingCode;
+		
+		buildingCode = bt.getCaseFileCode();
+		byte[] coordPair = new byte[] {(byte)(p.x + 0x21), (byte)(p.y + 0x21)};
+		
+		coord = coordPair[1];
+		coord = (short) ((coord << 8) | coordPair[0]);
+		
+		return new short[] {coord, buildingCode};
+	}
+
+
 	private short pointToCasFileShortConverter(Point p){
 		File f = new File("HERO.cas");
 		FileOutputStream fos;
