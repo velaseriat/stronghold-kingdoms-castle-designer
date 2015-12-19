@@ -276,23 +276,28 @@ public class Editor
 		{
 
 			public void actionPerformed(ActionEvent arg0) {
-				boolean gotDir = false;
-				File dir;
-				//determine what files system to use
-				if (System.getProperty("os.name").toLowerCase().contains("windows")){
-					dir = (new File(System.getenv("APPDATA")));
-					if (dir.exists()){
-						dir = new File(dir.getPath() + "/Firefly Studios/Stronghold Kingdoms");
-						if (dir.exists())
-							prepareCastleFileExporter(dir);
+				if (JOptionPane.showConfirmDialog(null, "You sure you want to rewrite all of your castle files?") == JOptionPane.YES_OPTION){
+					boolean gotDir = false;
+					File dir;
+					//determine what files system to use
+					if (System.getProperty("os.name").toLowerCase().contains("windows")){
+						dir = (new File(System.getenv("APPDATA")));
+						if (dir.exists()){
+							dir = new File(dir.getPath() + "/Firefly Studios/Stronghold Kingdoms");
+							if (dir.exists())
+								prepareCastleFileExporter(dir);
+							else
+								JOptionPane.showMessageDialog(null, "You do not have Stronghold Kingdoms installed or you deleted you SHK appdata files.");
+						}
+						else
+							JOptionPane.showMessageDialog(null, "You don't have an appdata folder, so the function cannot continue.");
+					}
+					//you guys can add the other operating systems, like Mac OSX. I don't ... well I do but I'm lazy.
+					else{
+						//other operating system file structure to be added by other people!
+						//prepareCastleFileExporter(dir);
 					}
 				}
-				//you guys can add the other operating systems, like Mac OSX. I don't ... well I do but I'm lazy.
-				else{
-					//other operating system file structure to be added by other people!
-					//prepareCastleFileExporter(dir);
-				}
-
 			}
 
 			private void prepareCastleFileExporter(File dir) {

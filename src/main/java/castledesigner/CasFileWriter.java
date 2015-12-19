@@ -2,10 +2,14 @@ package castledesigner;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
+import java.nio.channels.FileChannel;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class CasFileWriter {
@@ -19,6 +23,46 @@ public class CasFileWriter {
 	public void writeToCasFiles(){
 		castleLayoutMap = convertGridData(gridData);
 		preWriteMap = addCasFileOffset(castleLayoutMap);
+		//maybe someone wants to prioritize centered structures? in hex, coords of keep is (36, 36).
+		outputToFiles(preWriteMap);
+	}
+
+	private void outputToFiles(HashMap<Point, BuildingType> pwm) {
+		int totalStructures = pwm.size();
+		for (Point p : pwm.keySet()){
+			pointToCasFileShortConverter(p);
+		}
+	}
+	
+	
+	private short pointToCasFileShortConverter(Point p){
+		File f = new File("HERO.cas");
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream(f);
+			short[] payload = {0x2122, 0x2324, 0x2122, 0x2324};
+			ByteBuffer myByteBuffer = ByteBuffer.allocate(8);
+			myByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			
+			ShortBuffer myShortBuffer = myByteBuffer.asShortBuffer();
+			myShortBuffer.put(payload);
+			
+			FileChannel out = fos.getChannel();
+
+			
+			out.write(myByteBuffer);
+
+			
+			out.close();
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return 0x0000;
 	}
 
 	private HashMap<Point, BuildingType> addCasFileOffset(HashMap<CastlePoint, BuildingType> clm) {
@@ -30,7 +74,6 @@ public class CasFileWriter {
 			Point p = new Point(cp.x + offset.x, cp.y + offset.y);
 			output.put(p, bt);
 		}
-		System.out.println(output);
 		return output;
 	}
 

@@ -46,31 +46,31 @@ public enum BuildingType
 {
 	// @formatter:off
 	//Wood
-	WOODEN_WALL(		new Color(150, 75, 0), 		new Dimension(1, 1), false, 	new Integer[] {0, 20, 0, 0},	225,	"2100",	new Point(0, 0)),
-	WOODEN_GATEHOUSE(	new Color(100, 50, 0), 		new Dimension(3, 3), true, 		new Integer[] {0, 200, 0, 0}, 	3600,	"2700",	new Point(1, 1)),
-	WOODEN_TOWER(		new Color(125, 58, 0), 		new Dimension(2, 2), false, 	new Integer[] {0, 200, 0, 0}, 	10800,	"1500",	new Point(1, 0)),
+	WOODEN_WALL(		new Color(150, 75, 0), 		new Dimension(1, 1), false, 	new Integer[] {0, 20, 0, 0},	225,	(short)0x2100,	new Point(0, 0)),
+	WOODEN_GATEHOUSE(	new Color(100, 50, 0), 		new Dimension(3, 3), true, 		new Integer[] {0, 200, 0, 0}, 	3600,	(short)0x2700,	new Point(1, 1)),
+	WOODEN_TOWER(		new Color(125, 58, 0), 		new Dimension(2, 2), false, 	new Integer[] {0, 200, 0, 0}, 	10800,	(short)0x1500,	new Point(1, 0)),
 	
 	//Stone
-	STONE_WALL(			new Color(230, 230, 230), 	new Dimension(1, 1), false, 	new Integer[] {100, 0, 0, 0}, 	900,	"2200",	new Point(0, 0)),
-	STONE_GATEHOUSE(	new Color(100, 100, 100), 	new Dimension(3, 3), true, 		new Integer[] {500, 0, 0, 0}, 	7200,	"2500",	new Point(1, 1)),
-	LOOKOUT_TOWER(		new Color(200, 200, 200), 	new Dimension(2, 2), true, 		new Integer[] {300, 0, 0, 0}, 	14400,	"0b00",	new Point(1, 0)),
-	SMALL_TOWER(		new Color(200, 200, 200), 	new Dimension(3, 3), true, 		new Integer[] {800, 0, 0, 0}, 	28800,	"0c00",	new Point(1, 1)),
-	LARGE_TOWER(		new Color(200, 200, 200), 	new Dimension(4, 4), true, 		new Integer[] {1500, 0, 0, 0}, 	57600,	"0d00",	new Point(2, 1)),
-	GREAT_TOWER(		new Color(200, 200, 200), 	new Dimension(5, 5), true, 		new Integer[] {2500, 0, 0, 0}, 	86400,	"0e00",	new Point(2, 2)),
+	STONE_WALL(			new Color(230, 230, 230), 	new Dimension(1, 1), false, 	new Integer[] {100, 0, 0, 0}, 	900,	(short)0x2200,	new Point(0, 0)),
+	STONE_GATEHOUSE(	new Color(100, 100, 100), 	new Dimension(3, 3), true, 		new Integer[] {500, 0, 0, 0}, 	7200,	(short)0x2500,	new Point(1, 1)),
+	LOOKOUT_TOWER(		new Color(200, 200, 200), 	new Dimension(2, 2), true, 		new Integer[] {300, 0, 0, 0}, 	14400,	(short)0x0b00,	new Point(1, 0)),
+	SMALL_TOWER(		new Color(200, 200, 200), 	new Dimension(3, 3), true, 		new Integer[] {800, 0, 0, 0}, 	28800,	(short)0x0c00,	new Point(1, 1)),
+	LARGE_TOWER(		new Color(200, 200, 200), 	new Dimension(4, 4), true, 		new Integer[] {1500, 0, 0, 0}, 	57600,	(short)0x0d00,	new Point(2, 1)),
+	GREAT_TOWER(		new Color(200, 200, 200), 	new Dimension(5, 5), true, 		new Integer[] {2500, 0, 0, 0}, 	86400,	(short)0x0e00,	new Point(2, 2)),
 
 	//Misc
-	GUARD_HOUSE(		new Color(255, 200, 180), 	new Dimension(3, 3), false, 	new Integer[] {0, 400, 0, 0}, 	10800,	"1f00",	new Point(1, 1)),
-	BALLISTA_TOWER(		new Color(230, 200, 60), 	new Dimension(3, 3), false, 	new Integer[] {0, 10000, 0, 0}, 18000,	"2a00",	new Point(1, 1)),
-	TURRET(				new Color(0, 0, 80), 		new Dimension(2, 2), false, 	new Integer[] {2000, 0, 0, 0}, 	14400,	"2900",	new Point(1, 0)),
-	SMELTER(			new Color(200, 30, 30), 	new Dimension(4, 4), false, 	new Integer[] {0, 0, 400, 0}, 	21600,	"2000",	new Point(2, 1)),
-	MOAT(				new Color(0, 200, 255), 	new Dimension(1, 1), false, 	new Integer[] {0, 0, 0, 20}, 	900,	"2300",	new Point(0, 0)),
+	GUARD_HOUSE(		new Color(255, 200, 180), 	new Dimension(3, 3), false, 	new Integer[] {0, 400, 0, 0}, 	10800,	(short)0x1f00,	new Point(1, 1)),
+	BALLISTA_TOWER(		new Color(230, 200, 60), 	new Dimension(3, 3), false, 	new Integer[] {0, 10000, 0, 0}, 18000,	(short)0x2a00,	new Point(1, 1)),
+	TURRET(				new Color(0, 0, 80), 		new Dimension(2, 2), false, 	new Integer[] {2000, 0, 0, 0}, 	14400,	(short)0x2900,	new Point(1, 0)),
+	SMELTER(			new Color(200, 30, 30), 	new Dimension(4, 4), false, 	new Integer[] {0, 0, 400, 0}, 	21600,	(short)0x2000,	new Point(2, 1)),
+	MOAT(				new Color(0, 200, 255), 	new Dimension(1, 1), false, 	new Integer[] {0, 0, 0, 20}, 	900,	(short)0x2300,	new Point(0, 0)),
 	
 	//Keep
-	KEEP(				new Color(0, 0, 0), 		new Dimension(8, 8), false, 	new Integer[] {0, 0, 0, 0}, 	0,		"",		new Point(0, 0)),
-	KILLING_PIT(		new Color(120, 100, 0), 	new Dimension(1, 1), false, 	new Integer[] {0, 0, 100, 0}, 	3600,	"2400",	new Point(0, 0)),
+	KEEP(				new Color(0, 0, 0), 		new Dimension(8, 8), false, 	new Integer[] {0, 0, 0, 0}, 	0,		(short)0x0000,	null),
+	KILLING_PIT(		new Color(120, 100, 0), 	new Dimension(1, 1), false, 	new Integer[] {0, 0, 100, 0}, 	3600,	(short)0x2400,	new Point(0, 0)),
 	
 	// additional building in age 4++
-	BOMBARD(			new Color(49, 44, 33), 		new Dimension(3, 3), false, 	new Integer[] {0,0,1000, 0}, 	43200,	"2c00",	new Point(1, 1));
+	BOMBARD(			new Color(49, 44, 33), 		new Dimension(3, 3), false, 	new Integer[] {0,0,1000, 0}, 	43200,	(short)0x2c00,	new Point(1, 1));
 	// @formatter:on
 	
 	private final 	Color 								colour;
@@ -81,7 +81,7 @@ public enum BuildingType
 	private 		BufferedImage 						invalidOverlay;
 	private 		Map<BuildingResource, Integer> 		buildingResources;
 	private 		int 								buildTime;
-	private			String								casFileCode;
+	private			short								casFileCode;
 	private			Point								casFileOffset;
 	
 	/**
@@ -106,7 +106,7 @@ public enum BuildingType
 			boolean 	gapRequired,
 			Integer[] 	resourceCosts,
 			int 		buildTime,
-			String		casFileCode,
+			short		casFileCode,
 			Point 		casFileOffset)
 	{
 		this.colour = colour;
@@ -170,7 +170,7 @@ public enum BuildingType
 	}
 	
 	//Convenience methods for .cas file output
-	public String getCaseFileCode(){
+	public short getCaseFileCode(){
 		return this.casFileCode;
 	}
 	public Point getCasFilePointOffset(){
