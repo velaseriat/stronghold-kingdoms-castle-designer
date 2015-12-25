@@ -8,6 +8,7 @@ Designs are saved as images for easy access, and barcoded to allow the image to 
 
 ##Details
 
+* NEW: Castle designs can be saved directly to .cas files stored on computer (Windows ONLY for now)
 * Buildings are placed quickly and efficiently by dragging the mouse.
 * Buildings can be removed in the same way with the right mouse button.
 * Designs are saved in a lossless png format.
